@@ -182,6 +182,7 @@ class Pong:
         self.ball_vy *= scale
 
     def _serve_after_score(self, to='left'):
+        print(self.ball_x, self.ball_y)
         self.ball_x = self.board_size_x / 2
         self.ball_y = self.board_size_y / 2
         dir_x = -1.0 if to == 'left' else 1.0
