@@ -1,6 +1,6 @@
 import numpy as np
 import pygame
-import time
+
 
 class Point:
     def __int__(self, x, y, v_x=0, v_y=0):
@@ -32,7 +32,8 @@ class Pong:
             max_score=1,
             max_steps=1000,
             seed=None,
-            ball_speed_variation=0.005
+            ball_speed_variation=0.005,
+            ball_size=0.01
     ):
         self.board_size_x = board_size_x
         self.board_size_y = board_size_y
@@ -42,6 +43,7 @@ class Pong:
         self.max_score = int(max_score)
         self.max_steps = int(max_steps)
         self.ball_speed_variation = float(ball_speed_variation)
+        self.ball_size = ball_size
 
         self.rng = np.random.RandomState(seed)
 
@@ -115,24 +117,22 @@ class Pong:
         info = {}
 
         if self.ball_x <= 0.0:
-            if abs(self.ball_y - self.left_paddle_y) <= self.paddle_half:
+            if abs(self.ball_y - self.left_paddle_y) <= self.paddle_half + self.ball_size:
                 self._reflect_from_paddle('left')
             else:
                 self.right_score += 1
                 reward_right += 1.0
                 reward_left -= 1
                 info['score_event'] = 'right'
-                self._serve_after_score(to='left')
 
         elif self.ball_x >= self.board_size_x:
-            if abs(self.ball_y - self.right_paddle_y) <= self.paddle_half:
+            if abs(self.ball_y - self.right_paddle_y) <= self.paddle_half + self.ball_size:
                 self._reflect_from_paddle('right')
             else:
                 self.left_score += 1
                 reward_left += 1.0
                 reward_right -= 1.0
                 info['score_event'] = 'left'
-                self._serve_after_score(to='right')
 
         self.steps += 1
 
@@ -181,15 +181,13 @@ class Pong:
         self.ball_vx *= scale
         self.ball_vy *= scale
 
-    def _serve_after_score(self, to='left'):
-        print(self.ball_x, self.ball_y)
+    def serve_after_score(self, to='left'):
         self.ball_x = self.board_size_x / 2
         self.ball_y = self.board_size_y / 2
         dir_x = -1.0 if to == 'left' else 1.0
         angle = self.rng.uniform(-0.25, 0.25)
         self.ball_vx = dir_x * self.ball_speed
         self.ball_vy = angle * self.ball_speed
-        time.sleep(1)
 
     def render(self, scale=40, caption="Pong", fps=60, margin_ratio=0.05):
         """
@@ -284,5 +282,3 @@ class Pong:
         # --- FPS cap ---
         if fps and fps > 0:
             self._clock.tick(fps)
-
-
