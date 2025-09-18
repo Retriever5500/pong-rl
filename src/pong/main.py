@@ -1,7 +1,7 @@
 import time
 
 from pong import Pong
-from agent import better_agent
+from pong_ai import better_agent
 
 
 def simple_agent(pong: Pong, side='right'):
@@ -20,7 +20,6 @@ def simple_agent(pong: Pong, side='right'):
         return -1
     else:
         return 0
-
 
 def main():
     pong = Pong(board_size_x=20, board_size_y=10, max_score=5, ball_speed=0.7, paddle_speed=0.4, paddle_half=1,
