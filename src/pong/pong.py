@@ -33,7 +33,6 @@ class Pong:
             ball_speed=0.03,
             max_score=1,
             max_steps=1000,
-            seed=None,
             ball_speed_variation=0.005,
             ball_size=0.01
     ):
@@ -47,8 +46,6 @@ class Pong:
         self.ball_speed_variation = float(ball_speed_variation)
         self.ball_size = ball_size
 
-        self.rng = np.random.RandomState(seed)
-
         self.left_paddle_y = None
         self.right_paddle_y = None
         self.ball_x = None
@@ -60,9 +57,9 @@ class Pong:
         self.steps = 0
         self.done = False
 
-        self.reset()
+    def reset(self, seed=None, serve_to=None):
+        self.rng = np.random.RandomState(seed)
 
-    def reset(self, serve_to=None):
         self.left_paddle_y = self.board_size_y / 2
         self.right_paddle_y = self.board_size_y / 2
         self.left_score = 0

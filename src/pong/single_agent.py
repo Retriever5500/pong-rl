@@ -21,8 +21,8 @@ class PongEnv(gym.Env):
         self.pong = Pong(board_size_x=20, board_size_y=10, max_score=5, ball_speed=0.7, paddle_speed=0.4, paddle_half=1,
                          max_steps=100000)
 
-    def reset(self, seed=0):
-        return self.pong.reset()
+    def reset(self, seed=None):
+        return self.pong.reset(seed=seed)
 
     def step(self, action):
         # Action space is 0, 1 and 2 however the game takes -1, 0, and 1 as input so we substarct by one
