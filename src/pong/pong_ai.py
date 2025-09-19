@@ -2,6 +2,7 @@ from .pong import Pong
 
 predicted_y_global = None
 
+
 def simple_agent(pong: Pong, side='right'):
     """
     Returns -1, 0, or +1 for paddle movement.
@@ -18,6 +19,7 @@ def simple_agent(pong: Pong, side='right'):
         return -1
     else:
         return 0
+
 
 def better_agent(pong: Pong, side='left'):
     """
@@ -69,6 +71,6 @@ def better_agent(pong: Pong, side='left'):
                         vy = -vy
             predicted_y_global = predicted_y
 
-        if abs(paddle_y+pong.ball_size - predicted_y_global) <= pong.paddle_speed:
+        if abs(paddle_y + pong.ball_size - predicted_y_global) <= pong.paddle_speed:
             return 0
         return 1 if paddle_y < predicted_y_global else -1

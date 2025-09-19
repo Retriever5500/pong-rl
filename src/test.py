@@ -7,6 +7,6 @@ model = PPO.load("ppo_pong", env=env)
 obs, info = env.reset()
 for _ in range(10000):
     action, _states = model.predict(obs)
-    obs, rewards, dones, trun, info = env.step(action)
+    obs, rewards, dones, turn, info = env.step(action)
     
 env.close()
