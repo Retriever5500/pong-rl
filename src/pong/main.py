@@ -1,7 +1,6 @@
 import time
-
 from pong import Pong
-from agent import better_agent
+from pong_ai import better_agent
 
 
 def simple_agent(pong: Pong, side='right'):

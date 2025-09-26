@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 import pygame
 
@@ -31,7 +33,6 @@ class Pong:
             ball_speed=0.03,
             max_score=1,
             max_steps=1000,
-            seed=None,
             ball_speed_variation=0.005,
             ball_size=0.01
     ):
@@ -45,8 +46,6 @@ class Pong:
         self.ball_speed_variation = float(ball_speed_variation)
         self.ball_size = ball_size
 
-        self.rng = np.random.RandomState(seed)
-
         self.left_paddle_y = None
         self.right_paddle_y = None
         self.ball_x = None
@@ -58,9 +57,9 @@ class Pong:
         self.steps = 0
         self.done = False
 
-        self.reset()
+    def reset(self, seed=None, serve_to=None):
+        self.rng = np.random.RandomState(seed)
 
-    def reset(self, serve_to=None):
         self.left_paddle_y = self.board_size_y / 2
         self.right_paddle_y = self.board_size_y / 2
         self.left_score = 0
@@ -81,7 +80,7 @@ class Pong:
         self.ball_vx = dir_x * self.ball_speed
         self.ball_vy = angle * self.ball_speed
 
-        return self.get_observation()
+        return self.get_observation(), {}
 
     def get_observation(self):
         return np.array([
@@ -182,6 +181,8 @@ class Pong:
         self.ball_vy *= scale
 
     def serve_after_score(self, to='left'):
+        self.left_paddle_y = self.board_size_y / 2
+        self.right_paddle_y = self.board_size_y / 2
         self.ball_x = self.board_size_x / 2
         self.ball_y = self.board_size_y / 2
         dir_x = -1.0 if to == 'left' else 1.0
@@ -282,3 +283,38 @@ class Pong:
         # --- FPS cap ---
         if fps and fps > 0:
             self._clock.tick(fps)
+
+    def close(self):
+        pygame.quit()
+
+
+if __name__ == "__main__":
+    from agent import better_agent, simple_agent
+    pong = Pong(board_size_x=20, board_size_y=10, max_score=5, ball_speed=0.7, paddle_speed=0.4, paddle_half=1,
+                max_steps=100000)
+
+    running = True
+    while running:
+        a_left = simple_agent(pong, side='left')
+        # a_left = better_agent(pong, side='left')
+
+        # a_right = simple_agent(pong, side='right')
+        a_right = better_agent(pong, side='right')
+
+        obs, rewards, done, info = pong.step((a_left, a_right))
+
+        pong.render(scale=40, fps=60)
+
+        if 'score_event' in info:
+            if info['score_event'] == 'right':
+                pong.serve_after_score(to='left')
+            else:
+                pong.serve_after_score(to='right')
+
+        if done:
+            print("Game finished:", info)
+            time.sleep(2)
+            pong.reset()
+
+        if not getattr(pong, "_pygame_running", True):
+            running = False
